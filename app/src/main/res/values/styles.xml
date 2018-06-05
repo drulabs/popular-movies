@@ -8,4 +8,30 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="HomeTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowTranslucentStatus">false</item>
+    </style>
+
+    <style name="sort_spinner_items">
+        <item name="android:textSize">@dimen/txt_regular</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <style name="expanded_title_appearance">
+        <item name="android:textSize">@dimen/txt_large</item>
+        <item name="android:textStyle">bold|italic</item>
+    </style>
+
+    <style name="detail_movie_style">
+        <item name="android:textSize">@dimen/txt_large</item>
+        <item name="android:textColor">@color/dark_grey</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginTop">@dimen/margin_medium</item>
+    </style>
+
 </resources>

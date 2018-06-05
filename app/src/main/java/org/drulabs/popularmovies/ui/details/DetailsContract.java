@@ -15,7 +15,7 @@ public interface DetailsContract {
     }
 
     interface Presenter extends BasePresenter {
-        void start(int movieId);
+        void start(long movieId);
         void favoriteTapped(boolean isFavorite);
     }
 

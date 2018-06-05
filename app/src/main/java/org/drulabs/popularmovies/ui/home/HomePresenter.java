@@ -3,9 +3,11 @@ package org.drulabs.popularmovies.ui.home;
 import org.drulabs.popularmovies.data.DataHandler;
 import org.drulabs.popularmovies.data.models.Movie;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
-import io.reactivex.Observer;
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -22,14 +24,9 @@ public class HomePresenter implements HomeContract.Presenter {
     private CompositeDisposable disposables;
 
     /**
-     * Keeps track of page number of popular movies
+     * Keeps track of page number of movies
      */
-    private int popularMoviePage = 1;
-
-    /**
-     * Keeps track of page number of top rated movies
-     */
-    private int topRatedMoviePage = 1;
+    private int pageNumber = 0;
 
     @Inject
     HomePresenter(HomeContract.View view, DataHandler dataHandler) {
@@ -40,7 +37,7 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void start() {
-
+        fetchPopularMovies(false);
     }
 
     @Override
@@ -49,68 +46,58 @@ public class HomePresenter implements HomeContract.Presenter {
     }
 
     @Override
-    public void fetchPopularMovies() {
+    public void fetchPopularMovies(boolean loadNextBatch) {
+        if (!loadNextBatch) {
+            pageNumber = 1;
+        }
         view.showLoading();
-
-        dataHandler.fetchPopularMovies(popularMoviePage)
+        dataHandler.fetchPopularMovies(pageNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Movie>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        disposables.add(d);
-                    }
-
-                    @Override
-                    public void onNext(Movie movie) {
-                        view.appendMovie(movie);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        view.onError();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        popularMoviePage++;
-                    }
-                });
+                .subscribe(getNewMovieObserver(loadNextBatch));
     }
 
     @Override
-    public void fetchTopRatedMovies() {
-        dataHandler.fetchTopRatedMovies(topRatedMoviePage)
+    public void fetchTopRatedMovies(boolean loadNextBatch) {
+        if (!loadNextBatch) {
+            pageNumber = 1;
+        }
+        view.showLoading();
+        dataHandler.fetchTopRatedMovies(pageNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Movie>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        disposables.add(d);
-                    }
-
-                    @Override
-                    public void onNext(Movie movie) {
-                        view.appendMovie(movie);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        view.onError();
-                        view.hideLoading();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        topRatedMoviePage++;
-                        view.hideLoading();
-                    }
-                });
+                .subscribe(getNewMovieObserver(loadNextBatch));
     }
 
 
     @Override
     public void destroy() {
         disposables.dispose();
+    }
+
+    private SingleObserver<List<Movie>> getNewMovieObserver(boolean loadNextBatch) {
+        return new SingleObserver<List<Movie>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                disposables.add(d);
+            }
+
+            @Override
+            public void onSuccess(List<Movie> movies) {
+                if (loadNextBatch) {
+                    view.appendMovies(movies);
+                } else {
+                    view.reload(movies);
+                }
+                pageNumber++;
+                view.hideLoading();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                view.onError();
+                view.hideLoading();
+            }
+        };
     }
 }

@@ -1,19 +1,32 @@
 package org.drulabs.popularmovies.ui.details;
 
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import org.drulabs.popularmovies.R;
 import org.drulabs.popularmovies.application.AppClass;
 import org.drulabs.popularmovies.di.DaggerViewComponent;
 import org.drulabs.popularmovies.di.ViewModule;
 
+import java.util.Locale;
+
 import javax.inject.Inject;
 
 public class DetailActivity extends AppCompatActivity implements DetailsContract.View {
 
     public static final String KEY_MOVIE_ID = "movie_id";
+
+    private ImageView imgPoster;
+    private TextView tvReleaseYear, tvRunTime, tvRating, tvSynopsis;
+    private CollapsingToolbarLayout toolbarLayout;
 
     @Inject
     DetailsContract.Presenter presenter;
@@ -23,6 +36,8 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        initializeUI();
+
         DaggerViewComponent.builder()
                 .appComponent(((AppClass) getApplicationContext()).getAppComponent())
                 .viewModule(new ViewModule(this))
@@ -31,7 +46,7 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
 
         Bundle extras = getIntent().getExtras();
         if (extras != null && extras.containsKey(KEY_MOVIE_ID)) {
-            int movieId = extras.getInt(KEY_MOVIE_ID);
+            long movieId = extras.getLong(KEY_MOVIE_ID);
             presenter.start(movieId);
         } else {
             onError();
@@ -39,34 +54,55 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
         }
     }
 
+    private void initializeUI() {
+        Toolbar toolbar = findViewById(R.id.toolbar_details);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        toolbarLayout = findViewById(R.id.toolbar_details_collapsing);
+
+        imgPoster = findViewById(R.id.img_detail_poster);
+        tvReleaseYear = findViewById(R.id.tv_detail_movie_year);
+        tvRunTime = findViewById(R.id.tv_detail_movie_runtime);
+        tvRating = findViewById(R.id.tv_detail_movie_rating);
+        tvSynopsis = findViewById(R.id.tv_details_synopsis);
+    }
+
     @Override
     public void loadPoster(String posterUrl) {
-
+        Picasso.with(this)
+                .load(posterUrl)
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.mipmap.ic_launcher)
+                .into(imgPoster);
     }
 
     @Override
     public void loadTitle(String title) {
-
+        toolbarLayout.setTitle(title);
     }
 
     @Override
     public void loadYear(String year) {
-
+        tvReleaseYear.setText(year);
     }
 
     @Override
     public void loadRuntime(String runtime) {
-
+        tvRunTime.setText(String.format(Locale.getDefault(), "%s min", runtime));
     }
 
     @Override
     public void loadRating(String rating) {
-
+        tvRating.setText(String.format(Locale.getDefault(), "%s / 10", rating));
     }
 
     @Override
     public void loadSummary(String summary) {
-
+        tvSynopsis.setText(summary);
     }
 
     @Override
@@ -86,6 +122,6 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
 
     @Override
     public DetailsContract.Presenter getPresenter() {
-        return null;
+        return presenter;
     }
 }

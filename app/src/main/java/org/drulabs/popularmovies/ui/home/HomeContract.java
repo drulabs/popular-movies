@@ -11,8 +11,6 @@ public interface HomeContract {
     interface View extends BaseView<Presenter> {
         void appendMovies(List<Movie> movies);
 
-        void appendMovie(Movie movie);
-
         void reload(List<Movie> movies);
 
         void navigateToMovieDetails(Movie movie);
@@ -23,8 +21,18 @@ public interface HomeContract {
 
         void onMovieTapped(Movie movie);
 
-        void fetchPopularMovies();
+        /**
+         * Fetches popular movies from remote source (TMDB)
+         *
+         * @param loadNextBatch if true, loads next batch, loads fresh batch otherwise
+         */
+        void fetchPopularMovies(boolean loadNextBatch);
 
-        void fetchTopRatedMovies();
+        /**
+         * Fetches popular movies from remote source (TMDB)
+         *
+         * @param loadNextBatch if true, loads next batch, loads fresh batch otherwise
+         */
+        void fetchTopRatedMovies(boolean loadNextBatch);
     }
 }

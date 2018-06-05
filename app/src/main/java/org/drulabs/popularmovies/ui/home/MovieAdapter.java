@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 
 import org.drulabs.popularmovies.R;
+import org.drulabs.popularmovies.config.AppConstants;
 import org.drulabs.popularmovies.data.models.Movie;
 
 import java.util.ArrayList;
@@ -17,13 +18,13 @@ import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieVH> {
 
-    private static final String TMDB_POSTER_BASE = "http://image.tmdb.org/t/p/w185";
+    private static final String TMDB_POSTER_BASE = AppConstants.TMDB_POSTER_BASE;
 
     private List<Movie> movieList;
 
-    private MovieClickListener listener;
+    private MovieInteractionListener listener;
 
-    MovieAdapter(MovieClickListener listener) {
+    MovieAdapter(@NonNull MovieInteractionListener listener) {
         this.movieList = new ArrayList<>();
         this.listener = listener;
     }
@@ -47,17 +48,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieVH> {
         return movieList.size();
     }
 
-    void append(@NonNull Movie movie){
-        this.movieList.add(movie);
-        notifyDataSetChanged();
-    }
-
-    void append(@NonNull List<Movie> movies){
+    void append(@NonNull List<Movie> movies) {
         this.movieList.addAll(movies);
         notifyDataSetChanged();
     }
 
-    void clearAndReload(@NonNull List<Movie> movies){
+    void clearAndReload(@NonNull List<Movie> movies) {
         this.movieList.clear();
         this.movieList.addAll(movies);
         notifyDataSetChanged();
@@ -78,13 +74,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieVH> {
 
             Picasso.with(itemView.getContext())
                     .load(posterUrl)
+                    .placeholder(R.drawable.ic_placeholder)
                     .error(R.mipmap.ic_launcher)
                     .into(posterImg);
             itemView.setOnClickListener(v -> listener.onClick(movie));
         }
     }
 
-    interface MovieClickListener {
+    interface MovieInteractionListener {
         void onClick(Movie movie);
     }
 }
