@@ -20,8 +20,8 @@ import io.reactivex.schedulers.Schedulers;
 
 public class DetailsPresenter implements DetailsContract.Presenter {
 
-    private DetailsContract.View view;
-    private DataHandler dataHandler;
+    private final DetailsContract.View view;
+    private final DataHandler dataHandler;
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat
             ("yyyy-MM-dd", Locale.getDefault());
@@ -29,7 +29,7 @@ public class DetailsPresenter implements DetailsContract.Presenter {
     /**
      * For keeping all disposables together
      */
-    private CompositeDisposable disposables;
+    private final CompositeDisposable disposables;
 
     @Inject
     DetailsPresenter(DetailsContract.View view, DataHandler dataHandler) {
@@ -79,7 +79,7 @@ public class DetailsPresenter implements DetailsContract.Presenter {
 
     @Override
     public void favoriteTapped(boolean isFavorite) {
-
+        // TODO implement it in popular movies phase 2
     }
 
     @Override

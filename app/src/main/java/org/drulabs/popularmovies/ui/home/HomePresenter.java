@@ -15,13 +15,13 @@ import io.reactivex.schedulers.Schedulers;
 
 public class HomePresenter implements HomeContract.Presenter {
 
-    private HomeContract.View view;
-    private DataHandler dataHandler;
+    private final HomeContract.View view;
+    private final DataHandler dataHandler;
 
     /**
      * For keeping all disposables together
      */
-    private CompositeDisposable disposables;
+    private final CompositeDisposable disposables;
 
     /**
      * Keeps track of page number of movies
@@ -42,7 +42,7 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void onMovieTapped(Movie movie) {
-
+        this.view.navigateToMovieDetails(movie);
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.drulabs.popularmovies.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 import org.drulabs.popularmovies.R;
 import org.drulabs.popularmovies.application.AppClass;
 import org.drulabs.popularmovies.data.models.Movie;
+import org.drulabs.popularmovies.di.ActivityScope;
 import org.drulabs.popularmovies.di.DaggerViewComponent;
 import org.drulabs.popularmovies.di.ViewModule;
 import org.drulabs.popularmovies.ui.details.DetailActivity;
@@ -26,14 +28,18 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+@ActivityScope
 public class HomeActivity extends AppCompatActivity implements HomeContract.View, MovieAdapter
         .MovieInteractionListener, SwipeRefreshLayout.OnRefreshListener, AdapterView
         .OnItemSelectedListener {
 
     private static final int RECYCLER_VIEW_SPAN_COUNT = 2;
 
-    private static final int SELECTION_POPULAR_MOVIES = 1;
-    private static final int SELECTION_TOP_RATED_MOVIES = 2;
+    private static final float ALPHA_GREYED_OUT = 0.3f;
+    private static final float ALPHA_REGULAR = 1.0f;
+
+    private static final int SELECTION_POPULAR_MOVIES = 0;
+    private static final int SELECTION_TOP_RATED_MOVIES = 1;
     private int currentSelection = SELECTION_POPULAR_MOVIES;
 
     @Inject
@@ -71,8 +77,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         }
 
         rvMovies = findViewById(R.id.rv_movies);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,
-                RECYCLER_VIEW_SPAN_COUNT);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, RECYCLER_VIEW_SPAN_COUNT);
         rvMovies.setLayoutManager(gridLayoutManager);
         moviesAdapter = new MovieAdapter(this);
         rvMovies.setAdapter(moviesAdapter);
@@ -116,6 +121,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
+        rvMovies.setSaveEnabled(true);
     }
 
     @Override
@@ -130,17 +136,21 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     @Override
     public void navigateToMovieDetails(Movie movie) {
-
+        Intent detailsIntent = new Intent(this, DetailActivity.class);
+        detailsIntent.putExtra(DetailActivity.KEY_MOVIE_ID, movie.getId());
+        startActivity(detailsIntent);
     }
 
     @Override
     public void showLoading() {
         srHomeLayoutHolder.setRefreshing(true);
+        rvMovies.setAlpha(ALPHA_GREYED_OUT);
     }
 
     @Override
     public void hideLoading() {
         srHomeLayoutHolder.setRefreshing(false);
+        rvMovies.setAlpha(ALPHA_REGULAR);
     }
 
     @Override
@@ -155,9 +165,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     @Override
     public void onClick(Movie movie) {
-        Intent detailsIntent = new Intent(this, DetailActivity.class);
-        detailsIntent.putExtra(DetailActivity.KEY_MOVIE_ID, movie.getId());
-        startActivity(detailsIntent);
+        presenter.onMovieTapped(movie);
     }
 
     @Override

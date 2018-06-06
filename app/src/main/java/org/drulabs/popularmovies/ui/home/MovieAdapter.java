@@ -20,9 +20,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieVH> {
 
     private static final String TMDB_POSTER_BASE = AppConstants.TMDB_POSTER_BASE;
 
-    private List<Movie> movieList;
+    private final List<Movie> movieList;
 
-    private MovieInteractionListener listener;
+    private final MovieInteractionListener listener;
 
     MovieAdapter(@NonNull MovieInteractionListener listener) {
         this.movieList = new ArrayList<>();
@@ -61,7 +61,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieVH> {
 
     class MovieVH extends RecyclerView.ViewHolder {
 
-        ImageView posterImg;
+        final ImageView posterImg;
 
         MovieVH(@NonNull View itemView) {
             super(itemView);

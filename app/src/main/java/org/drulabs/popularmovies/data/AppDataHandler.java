@@ -10,8 +10,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleObserver;
@@ -19,29 +17,23 @@ import io.reactivex.disposables.Disposable;
 
 public class AppDataHandler implements DataHandler {
 
-    private Context context;
-    private TMDBApi tmdbApi;
+    private final TMDBApi tmdbApi;
 
     @Inject
     AppDataHandler(Context context, TMDBApi tmdbApi) {
-        this.context = context;
         this.tmdbApi = tmdbApi;
     }
 
     @Override
     public Single<List<Movie>> fetchPopularMovies(int pageNumber) {
-        return Single.create(e -> {
-            tmdbApi.getPopularMovies(pageNumber)
-                    .subscribe(getSingleMovieObserver(e));
-        });
+        return Single.create(e -> tmdbApi.getPopularMovies(pageNumber)
+                .subscribe(getSingleMovieObserver(e)));
     }
 
     @Override
     public Single<List<Movie>> fetchTopRatedMovies(int pageNumber) {
-        return Single.create(e -> {
-            tmdbApi.getTopRatedMovies(pageNumber)
-                    .subscribe(getSingleMovieObserver(e));
-        });
+        return Single.create(e -> tmdbApi.getTopRatedMovies(pageNumber)
+                .subscribe(getSingleMovieObserver(e)));
     }
 
     @Override

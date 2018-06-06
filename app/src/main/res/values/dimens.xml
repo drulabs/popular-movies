@@ -2,13 +2,8 @@
 <resources>
     <!--Margin Related-->
     <dimen name="margin_medium">8dp</dimen>
-    <dimen name="margin_very_small">2dp</dimen>
     <dimen name="margin_small">4dp</dimen>
     <dimen name="margin_xx_large">32dp</dimen>
-
-    <!--Swipe Refresh layout related-->
-    <dimen name="swipe_refresher_offset">100</dimen>
-    <dimen name="swipe_refresher_offset_end">200</dimen>
 
     <!-- Text related -->
     <dimen name="txt_regular">16sp</dimen>

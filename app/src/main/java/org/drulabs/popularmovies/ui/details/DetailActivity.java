@@ -2,10 +2,13 @@ package org.drulabs.popularmovies.ui.details;
 
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,6 +16,7 @@ import com.squareup.picasso.Picasso;
 
 import org.drulabs.popularmovies.R;
 import org.drulabs.popularmovies.application.AppClass;
+import org.drulabs.popularmovies.di.ActivityScope;
 import org.drulabs.popularmovies.di.DaggerViewComponent;
 import org.drulabs.popularmovies.di.ViewModule;
 
@@ -20,10 +24,16 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+@ActivityScope
 public class DetailActivity extends AppCompatActivity implements DetailsContract.View {
 
     public static final String KEY_MOVIE_ID = "movie_id";
 
+    private static final float ALPHA_GREYED_OUT = 0.3f;
+    private static final float ALPHA_REGULAR = 1.0f;
+
+    private View clDetailsHolder;
+    private ProgressBar pbDetailsLoader;
     private ImageView imgPoster;
     private TextView tvReleaseYear, tvRunTime, tvRating, tvSynopsis;
     private CollapsingToolbarLayout toolbarLayout;
@@ -61,6 +71,9 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        clDetailsHolder = findViewById(R.id.cl_details_holder);
+        pbDetailsLoader = findViewById(R.id.pb_details_loader);
 
         toolbarLayout = findViewById(R.id.toolbar_details_collapsing);
 
@@ -107,12 +120,14 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
 
     @Override
     public void showLoading() {
-
+        clDetailsHolder.setAlpha(ALPHA_GREYED_OUT);
+        pbDetailsLoader.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideLoading() {
-
+        clDetailsHolder.setAlpha(ALPHA_REGULAR);
+        pbDetailsLoader.setVisibility(View.GONE);
     }
 
     @Override

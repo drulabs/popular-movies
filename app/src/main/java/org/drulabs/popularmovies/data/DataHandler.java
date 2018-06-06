@@ -4,7 +4,6 @@ import org.drulabs.popularmovies.data.models.Movie;
 
 import java.util.List;
 
-import io.reactivex.Observable;
 import io.reactivex.Single;
 
 /**

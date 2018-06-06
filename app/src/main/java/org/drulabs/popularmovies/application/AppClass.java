@@ -9,7 +9,7 @@ import org.drulabs.popularmovies.di.NetworkModule;
 
 public class AppClass extends Application {
 
-    AppComponent appComponent;
+    private AppComponent appComponent;
 
     @Override
     public void onCreate() {

@@ -13,7 +13,7 @@ public class TMDBApiBuilder {
 
     private final static String PARAM_API_KEY = "api_key";
 
-    private Retrofit.Builder tmdbApiBuilder;
+    private final Retrofit.Builder tmdbApiBuilder;
 
     public TMDBApiBuilder() {
         tmdbApiBuilder = new Retrofit.Builder().baseUrl(TMDBApi.TMDB_BASE_URL)
