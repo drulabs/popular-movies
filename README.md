@@ -15,8 +15,8 @@ for both screens (communicates via interfaces)
 - Enter your TMDB api key in `org.drulabs.popularmovies.config.AppConstants.TMDB_API_KEY`. This 
 field currently hold some dummy string.
 - This app uses dagger2 and retrofit2 libraries which heavily depend on annotation processing. To
- run the app, please clean the project and rebuild. `You may have to repeat this a couple of times` 
- so Dagger and Retrofit related compile time classes can be generated. Just cleaning the project 
+ run the app, please clean the project and rebuild. **`You may have to repeat this a couple of 
+ times`** so Dagger and Retrofit related compile time classes can be generated. Just cleaning the project 
  is not sufficient.
 
 ## Additional features
@@ -32,10 +32,11 @@ unused, hence left those. Lint rules needs to be updated.
 
 ## Pending
 - Handling orientation change
+- Some lint issues
 
 ## Please review these
 - Usage of dagger2. It is an awesome library for dependency injection. Is the way I stitched View
  interface and Activity okay?
 - Is the usage of ActivityScope (annotation @ActivityScope) proper? 
-- For stage 2, should I replace reactive extensions with live data? or use reative extentions 
+- For stage 2, should I replace reactive extensions with live data? or use reactive extensions 
 with room as both are compatible. 
