@@ -3,6 +3,7 @@
     <!--Margin Related-->
     <dimen name="margin_medium">8dp</dimen>
     <dimen name="margin_small">4dp</dimen>
+    <dimen name="margin_x_large">16dp</dimen>
     <dimen name="margin_xx_large">32dp</dimen>
 
     <!-- Text related -->
@@ -11,5 +12,5 @@
     <dimen name="txt_medium">20sp</dimen>
 
     <!-- Others -->
-    <dimen name="collapsing_toolbar_height">150dp</dimen>
+    <dimen name="movie_anchor_width">100dp</dimen>
 </resources>

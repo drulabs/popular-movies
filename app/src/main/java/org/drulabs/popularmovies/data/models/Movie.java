@@ -13,6 +13,10 @@ public class Movie {
     @SerializedName("poster_path")
     private String posterPath;
 
+    @SerializedName("backdrop_path")
+
+    private String backdropPath;
+
     @SerializedName("original_title")
     private String originalTitle;
 
@@ -77,6 +81,14 @@ public class Movie {
 
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
+    }
+
+    public String getBackdropPath() {
+        return backdropPath;
+    }
+
+    public void setBackdropPath(String backdropPath) {
+        this.backdropPath = backdropPath;
     }
 
     public String getOriginalTitle() {

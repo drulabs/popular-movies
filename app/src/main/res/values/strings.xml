@@ -8,4 +8,10 @@
     <string name="text_movie_poster">Movie poster</string>
     <string name="txt_mark_favorite">Mark as favorite</string>
     <string name="txt_trailers_reviews">Trailers and Reviews coming soon</string>
+    <string name="format_runtime" translatable="false">Runtime: %s min</string>
+    <string name="format_rating" translatable="false">IMDB Rating: %s / 10</string>
+    <string name="format_movie_year" translatable="false">Release year: %s</string>
+    <string name="text_movie_backdrop">Movie backdrop image</string>
+    <string name="text_favourite_icon">Favorite / unfavorite the movie</string>
+    <string name="txt_synopsis">Overview</string>
 </resources>

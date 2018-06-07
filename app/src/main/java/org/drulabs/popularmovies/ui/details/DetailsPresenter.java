@@ -54,6 +54,8 @@ public class DetailsPresenter implements DetailsContract.Presenter {
                     public void onSuccess(Movie movie) {
                         if (movie != null) {
                             view.loadPoster(AppConstants.TMDB_POSTER_BASE + movie.getPosterPath());
+                            view.loadBackdrop(AppConstants.TMDB_POSTER_BASE + movie
+                                    .getBackdropPath());
                             view.loadRuntime(String.valueOf(movie.getRuntime()));
                             view.loadRating(String.valueOf(movie.getVoteAverage()));
                             view.loadSummary(movie.getOverview());

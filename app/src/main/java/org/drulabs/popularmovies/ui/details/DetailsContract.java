@@ -7,6 +7,7 @@ public interface DetailsContract {
 
     interface View extends BaseView<Presenter> {
         void loadPoster(String posterUrl);
+        void loadBackdrop(String backdropUrl);
         void loadTitle(String title);
         void loadYear(String year);
         void loadRuntime(String runtime);

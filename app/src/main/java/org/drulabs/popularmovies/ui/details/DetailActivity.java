@@ -34,9 +34,10 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
 
     private View clDetailsHolder;
     private ProgressBar pbDetailsLoader;
-    private ImageView imgPoster;
+    private ImageView imgPoster, imgBackdrop;
     private TextView tvReleaseYear, tvRunTime, tvRating, tvSynopsis;
-    private CollapsingToolbarLayout toolbarLayout;
+    //private CollapsingToolbarLayout toolbarLayout;
+    private Toolbar toolbar;
 
     @Inject
     DetailsContract.Presenter presenter;
@@ -65,7 +66,7 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
     }
 
     private void initializeUI() {
-        Toolbar toolbar = findViewById(R.id.toolbar_details);
+        toolbar = findViewById(R.id.toolbar_details);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -75,9 +76,10 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
         clDetailsHolder = findViewById(R.id.cl_details_holder);
         pbDetailsLoader = findViewById(R.id.pb_details_loader);
 
-        toolbarLayout = findViewById(R.id.toolbar_details_collapsing);
+        // toolbarLayout = findViewById(R.id.toolbar_details_collapsing);
 
         imgPoster = findViewById(R.id.img_detail_poster);
+        imgBackdrop = findViewById(R.id.img_detail_backdrop);
         tvReleaseYear = findViewById(R.id.tv_detail_movie_year);
         tvRunTime = findViewById(R.id.tv_detail_movie_runtime);
         tvRating = findViewById(R.id.tv_detail_movie_rating);
@@ -94,23 +96,34 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
     }
 
     @Override
+    public void loadBackdrop(String backdropUrl) {
+        Picasso.with(this)
+                .load(backdropUrl)
+                .placeholder(R.drawable.ic_placeholder)
+                .into(imgBackdrop);
+    }
+
+    @Override
     public void loadTitle(String title) {
-        toolbarLayout.setTitle(title);
+        toolbar.setTitle(title);
     }
 
     @Override
     public void loadYear(String year) {
-        tvReleaseYear.setText(year);
+        tvReleaseYear.setText(String.format(Locale.getDefault(), getString(R.string
+                        .format_movie_year), year));
     }
 
     @Override
     public void loadRuntime(String runtime) {
-        tvRunTime.setText(String.format(Locale.getDefault(), "%s min", runtime));
+        tvRunTime.setText(String.format(Locale.getDefault(), getString(R.string.format_runtime),
+                runtime));
     }
 
     @Override
     public void loadRating(String rating) {
-        tvRating.setText(String.format(Locale.getDefault(), "%s / 10", rating));
+        tvRating.setText(String.format(Locale.getDefault(), getString(R.string.format_rating),
+                rating));
     }
 
     @Override

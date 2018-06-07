@@ -1,5 +1,6 @@
 package org.drulabs.popularmovies.data.remote;
 
+import org.drulabs.popularmovies.BuildConfig;
 import org.drulabs.popularmovies.config.AppConstants;
 
 import okhttp3.HttpUrl;
@@ -41,7 +42,7 @@ public class TMDBApiBuilder {
 
                 // Adding API KEY query parameter
                 HttpUrl newUrl = originalHttpUrl.newBuilder().addQueryParameter(PARAM_API_KEY,
-                        AppConstants.TMDB_API_KEY).build();
+                        BuildConfig.TMDB_API_KEY).build();
 
                 Request.Builder reqBuilder = originalReq.newBuilder().url(newUrl);
                 Request newReq = reqBuilder.build();

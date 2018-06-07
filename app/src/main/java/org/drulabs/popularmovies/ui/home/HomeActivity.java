@@ -2,7 +2,6 @@ package org.drulabs.popularmovies.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -10,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import org.drulabs.popularmovies.R;
 import org.drulabs.popularmovies.application.AppClass;
+import org.drulabs.popularmovies.config.AppConstants;
 import org.drulabs.popularmovies.data.models.Movie;
 import org.drulabs.popularmovies.di.ActivityScope;
 import org.drulabs.popularmovies.di.DaggerViewComponent;
@@ -33,7 +35,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         .MovieInteractionListener, SwipeRefreshLayout.OnRefreshListener, AdapterView
         .OnItemSelectedListener {
 
-    private static final int RECYCLER_VIEW_SPAN_COUNT = 2;
+    private static final int DEFAULT_SPAN_COUNT = 2;
 
     private static final float ALPHA_GREYED_OUT = 0.3f;
     private static final float ALPHA_REGULAR = 1.0f;
@@ -77,7 +79,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         }
 
         rvMovies = findViewById(R.id.rv_movies);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, RECYCLER_VIEW_SPAN_COUNT);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, calculateBestSpanCount
+                (AppConstants.DEFAULT_POSTER_WIDTH));
         rvMovies.setLayoutManager(gridLayoutManager);
         moviesAdapter = new MovieAdapter(this);
         rvMovies.setAdapter(moviesAdapter);
@@ -161,6 +164,15 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     @Override
     public HomeContract.Presenter getPresenter() {
         return presenter;
+    }
+
+    private int calculateBestSpanCount(int posterWidth) {
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
+        float screenWidth = outMetrics.widthPixels;
+        int spanCount = Math.round(screenWidth / posterWidth);
+        return (spanCount < DEFAULT_SPAN_COUNT) ? DEFAULT_SPAN_COUNT : spanCount;
     }
 
     @Override
