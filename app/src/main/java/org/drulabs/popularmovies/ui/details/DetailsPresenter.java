@@ -4,10 +4,7 @@ import org.drulabs.popularmovies.config.AppConstants;
 import org.drulabs.popularmovies.data.DataHandler;
 import org.drulabs.popularmovies.data.models.Movie;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -59,15 +56,8 @@ public class DetailsPresenter implements DetailsContract.Presenter {
                             view.loadRuntime(String.valueOf(movie.getRuntime()));
                             view.loadRating(String.valueOf(movie.getVoteAverage()));
                             view.loadSummary(movie.getOverview());
-                            view.loadTitle(movie.getOriginalTitle());
-                            try {
-                                Date releaseDate = dateFormat.parse(movie.getReleaseDate());
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.setTime(releaseDate);
-                                view.loadYear(String.valueOf(calendar.get(Calendar.YEAR)));
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
+                            view.loadTitle(movie.getTitle());
+                            view.loadReleaseDate(movie.getReleaseDate());
                         }
                         view.hideLoading();
                     }

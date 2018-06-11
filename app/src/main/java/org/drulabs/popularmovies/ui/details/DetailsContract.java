@@ -9,7 +9,7 @@ public interface DetailsContract {
         void loadPoster(String posterUrl);
         void loadBackdrop(String backdropUrl);
         void loadTitle(String title);
-        void loadYear(String year);
+        void loadReleaseDate(String releaseDate);
         void loadRuntime(String runtime);
         void loadRating(String rating);
         void loadSummary(String summary);

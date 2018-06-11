@@ -8,9 +8,10 @@
 
     <!-- Text related -->
     <dimen name="txt_regular">16sp</dimen>
-    <dimen name="txt_large">30sp</dimen>
+    <dimen name="txt_x_large">30sp</dimen>
     <dimen name="txt_medium">20sp</dimen>
+    <dimen name="txt_large">24sp</dimen>
 
     <!-- Others -->
-    <dimen name="movie_anchor_width">80dp</dimen>
+    <dimen name="movie_anchor_width">120dp</dimen>
 </resources>

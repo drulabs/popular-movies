@@ -25,7 +25,7 @@ import org.drulabs.popularmovies.di.ActivityScope;
 import org.drulabs.popularmovies.di.DaggerViewComponent;
 import org.drulabs.popularmovies.di.ViewModule;
 import org.drulabs.popularmovies.ui.details.DetailActivity;
-import org.drulabs.popularmovies.ui.controls.EndlessScrollListener;
+import org.drulabs.popularmovies.ui.custom.EndlessScrollListener;
 
 import java.util.List;
 

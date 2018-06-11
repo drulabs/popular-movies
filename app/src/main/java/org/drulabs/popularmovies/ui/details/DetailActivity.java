@@ -2,10 +2,13 @@ package org.drulabs.popularmovies.ui.details;
 
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -33,9 +36,10 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
 
     private View clDetailsHolder;
     private ProgressBar pbDetailsLoader;
-    private ImageView imgPoster, imgBackdrop;
+    private ImageView imgPoster, imgBackdrop, imgBackground;
     private TextView tvReleaseYear, tvRunTime, tvRating, tvSynopsis;
     private CollapsingToolbarLayout toolbarLayout;
+    private NestedScrollView nsvDetails;
     // private Toolbar toolbar;
 
     @Inject
@@ -44,7 +48,7 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        setContentView(R.layout.activity_details_new);
 
         initializeUI();
 
@@ -72,6 +76,8 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        nsvDetails = findViewById(R.id.nsv_details_holder);
+
         clDetailsHolder = findViewById(R.id.cl_details_holder);
         pbDetailsLoader = findViewById(R.id.pb_details_loader);
 
@@ -79,6 +85,8 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
 
         imgPoster = findViewById(R.id.img_detail_poster);
         imgBackdrop = findViewById(R.id.img_detail_backdrop);
+        imgBackground = findViewById(R.id.img_background_image);
+
         tvReleaseYear = findViewById(R.id.tv_detail_movie_year);
         tvRunTime = findViewById(R.id.tv_detail_movie_runtime);
         tvRating = findViewById(R.id.tv_detail_movie_rating);
@@ -92,6 +100,12 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
                 .placeholder(R.drawable.ic_placeholder)
                 .error(R.drawable.ic_placeholder)
                 .into(imgPoster);
+        Picasso.with(this)
+                .load(posterUrl)
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_placeholder)
+                .into(imgBackground);
+        animate(imgPoster);
     }
 
     @Override
@@ -109,19 +123,21 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
     }
 
     @Override
-    public void loadYear(String year) {
-        tvReleaseYear.setText(String.format(Locale.getDefault(), getString(R.string
-                .format_movie_year), year));
+    public void loadReleaseDate(String releaseDate) {
+        tvReleaseYear.setVisibility(View.VISIBLE);
+        tvReleaseYear.setText(releaseDate);
     }
 
     @Override
     public void loadRuntime(String runtime) {
+        tvRunTime.setVisibility(View.VISIBLE);
         tvRunTime.setText(String.format(Locale.getDefault(), getString(R.string.format_runtime),
                 runtime));
     }
 
     @Override
     public void loadRating(String rating) {
+        tvRating.setVisibility(View.VISIBLE);
         tvRating.setText(String.format(Locale.getDefault(), getString(R.string.format_rating),
                 rating));
     }
@@ -151,5 +167,13 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
     @Override
     public DetailsContract.Presenter getPresenter() {
         return presenter;
+    }
+
+    private void animate(View viewToAnimate) {
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.item_pop_up_animation);
+        viewToAnimate.startAnimation(animation);
+        Animation slideUpAnimation = AnimationUtils.loadAnimation(this, android.R.anim
+                .slide_in_left);
+        nsvDetails.startAnimation(slideUpAnimation);
     }
 }

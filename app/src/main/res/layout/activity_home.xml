@@ -15,7 +15,7 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar_home"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="?android:attr/actionBarSize"
             android:background="@color/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -43,7 +43,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar_home">
 
-            <org.drulabs.popularmovies.ui.controls.GridRecyclerView
+            <org.drulabs.popularmovies.ui.custom.GridRecyclerView
                 android:id="@+id/rv_movies"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -1,4 +1,4 @@
-package org.drulabs.popularmovies.ui.controls;
+package org.drulabs.popularmovies.ui.custom;
 
 import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
