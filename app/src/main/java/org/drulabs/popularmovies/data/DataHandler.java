@@ -4,6 +4,7 @@ import org.drulabs.popularmovies.data.models.Movie;
 
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 /**
@@ -11,9 +12,9 @@ import io.reactivex.Single;
  * this layer
  */
 public interface DataHandler {
-    Single<List<Movie>> fetchPopularMovies(int pageNumber);
+    Observable<List<Movie>> fetchPopularMovies(int pageNumber);
 
-    Single<List<Movie>> fetchTopRatedMovies(int pageNumber);
+    Observable<List<Movie>> fetchTopRatedMovies(int pageNumber);
 
     Single<Movie> fetchMovieDetails(long movieId);
 }

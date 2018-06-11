@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.SingleObserver;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -75,28 +75,32 @@ public class HomePresenter implements HomeContract.Presenter {
         disposables.dispose();
     }
 
-    private SingleObserver<List<Movie>> getNewMovieObserver(boolean loadNextBatch) {
-        return new SingleObserver<List<Movie>>() {
+    private Observer<List<Movie>> getNewMovieObserver(boolean loadNextBatch) {
+        return new Observer<List<Movie>>() {
             @Override
             public void onSubscribe(Disposable d) {
                 disposables.add(d);
             }
 
             @Override
-            public void onSuccess(List<Movie> movies) {
-                if (loadNextBatch) {
+            public void onNext(List<Movie> movies) {
+                if(loadNextBatch){
                     view.appendMovies(movies);
                 } else {
                     view.reload(movies);
                 }
-                pageNumber++;
-                view.hideLoading();
             }
 
             @Override
             public void onError(Throwable e) {
                 view.onError();
                 view.hideLoading();
+            }
+
+            @Override
+            public void onComplete() {
+                view.hideLoading();
+                pageNumber++;
             }
         };
     }

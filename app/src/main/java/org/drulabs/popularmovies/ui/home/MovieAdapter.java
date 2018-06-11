@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -22,11 +24,16 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieVH> {
 
     private final List<Movie> movieList;
 
+    private final int spanCount;
+
     private final MovieInteractionListener listener;
 
-    MovieAdapter(@NonNull MovieInteractionListener listener) {
+    private int lastKnownPosition = -1;
+
+    MovieAdapter(@NonNull MovieInteractionListener listener, int spanCount) {
         this.movieList = new ArrayList<>();
         this.listener = listener;
+        this.spanCount = spanCount;
     }
 
     @NonNull
@@ -40,7 +47,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieVH> {
     @Override
     public void onBindViewHolder(@NonNull MovieVH holder, int position) {
         Movie movie = movieList.get(position);
-        holder.bind(movie);
+        holder.bind(movie, position);
     }
 
     @Override
@@ -49,14 +56,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieVH> {
     }
 
     void append(@NonNull List<Movie> movies) {
+        int oldSize = this.movieList.size();
         this.movieList.addAll(movies);
-        notifyDataSetChanged();
+        notifyItemRangeInserted(oldSize, movies.size());
     }
 
     void clearAndReload(@NonNull List<Movie> movies) {
         this.movieList.clear();
-        this.movieList.addAll(movies);
+        lastKnownPosition = -1;
         notifyDataSetChanged();
+        this.movieList.addAll(movies);
+        notifyItemRangeInserted(1, movies.size());
     }
 
     class MovieVH extends RecyclerView.ViewHolder {
@@ -68,19 +78,45 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieVH> {
             posterImg = itemView.findViewById(R.id.img_movie_poster);
         }
 
-        void bind(@NonNull Movie movie) {
+        void bind(@NonNull Movie movie, int position) {
 
             String posterUrl = TMDB_POSTER_BASE + movie.getPosterPath();
 
             Picasso.with(itemView.getContext())
                     .load(posterUrl)
                     .placeholder(R.drawable.ic_placeholder)
-                    .error(R.mipmap.ic_launcher)
+                    .error(R.drawable.ic_placeholder)
                     .into(posterImg);
             itemView.setOnClickListener(v -> listener.onClick(movie));
+
+            animate(itemView, position);
         }
     }
 
+    @Override
+    public long getItemId(int position) {
+        setHasStableIds(true);
+        return super.getItemId(position);
+    }
+
+    private void animate(View itemView, int position) {
+        if (position > lastKnownPosition) {
+            Animation animation = AnimationUtils.loadAnimation(itemView.getContext(), R.anim
+                    .item_fall_up_animation);
+
+            int offset = itemView.getContext().getResources().getInteger(R.integer
+                    .anim_duration_offset);
+            offset = offset + (position % spanCount) * offset;
+
+            animation.setStartOffset(offset);
+            itemView.startAnimation(animation);
+            lastKnownPosition = position;
+        }
+    }
+
+    /**
+     * Click interaction listener
+     */
     interface MovieInteractionListener {
         void onClick(Movie movie);
     }

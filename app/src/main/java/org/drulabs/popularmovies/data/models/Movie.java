@@ -1,5 +1,6 @@
 package org.drulabs.popularmovies.data.models;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 public class Movie {
@@ -201,5 +202,10 @@ public class Movie {
 
     public void setHomepage(String homepage) {
         this.homepage = homepage;
+    }
+
+    @Override
+    public String toString() {
+        return (new Gson()).toJson(this);
     }
 }

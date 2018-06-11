@@ -9,6 +9,7 @@
         android:id="@+id/cl_details_holder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
         android:background="@color/pureWhite">
 
         <android.support.design.widget.AppBarLayout
@@ -22,25 +23,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:titleEnabled="true"
-                app:contentScrim="?attr/colorPrimary"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+                app:contentScrim="@color/pureWhite"
+                app:layout_collapseMode="parallax"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                app:titleEnabled="true">
 
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar_details"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    app:layout_collapseMode="parallax"
+                    android:elevation="10dp"
+                    app:layout_collapseMode="pin"
                     app:titleTextColor="@color/pureWhite">
 
-                    <ImageView
-                        android:id="@+id/img_detail_favorite"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical|end"
-                        android:layout_marginEnd="@dimen/margin_medium"
-                        android:contentDescription="@string/text_favourite_icon"
-                        android:src="@drawable/ic_star_filled_gray" />
+                    <!--<ImageView-->
+                    <!--android:id="@+id/img_detail_favorite"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="center_vertical|end"-->
+                    <!--android:layout_marginEnd="@dimen/margin_medium"-->
+                    <!--android:contentDescription="@string/text_favourite_icon"-->
+                    <!--android:padding="@dimen/margin_medium"-->
+                    <!--android:src="@drawable/ic_star_filled_gray" />-->
 
                 </android.support.v7.widget.Toolbar>
 
@@ -51,22 +55,24 @@
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/text_movie_backdrop"
                     android:scaleType="fitCenter"
+                    android:src="@drawable/ic_backdrop"
                     tools:src="@drawable/sample_backdrop_image" />
             </android.support.design.widget.CollapsingToolbarLayout>
 
         </android.support.design.widget.AppBarLayout>
 
-        <ImageView
+        <org.drulabs.popularmovies.ui.controls.FloatingImageView
             android:id="@+id/img_detail_poster"
             android:layout_width="@dimen/movie_anchor_width"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/text_movie_poster"
-            android:src="@drawable/ic_placeholder"
+            android:layout_height="@dimen/movie_anchor_width"
             android:layout_margin="@dimen/margin_medium"
             android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
+            android:contentDescription="@string/text_movie_poster"
+            android:fitsSystemWindows="true"
+            android:src="@drawable/ic_placeholder"
             app:layout_anchor="@+id/app_bar_details"
-            app:layout_anchorGravity="bottom|start" />
+            app:layout_anchorGravity="bottom|end"
+            app:layout_collapseMode="parallax" />
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -121,6 +127,7 @@
                     android:layout_below="@+id/ll_movie_detail_holder"
                     android:layout_marginStart="@dimen/margin_x_large"
                     android:text="@string/txt_synopsis" />
+
                 <View
                     android:id="@+id/separator_synopsis_label"
                     android:layout_width="match_parent"
@@ -128,6 +135,7 @@
                     android:layout_below="@+id/tv_details_synopsis_label"
                     android:layout_margin="@dimen/margin_medium"
                     android:background="@color/dark_grey" />
+
                 <TextView
                     android:id="@+id/tv_details_synopsis"
                     style="@style/detail_movie_style"

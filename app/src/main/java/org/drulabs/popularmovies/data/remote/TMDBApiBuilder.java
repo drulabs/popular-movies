@@ -1,7 +1,6 @@
 package org.drulabs.popularmovies.data.remote;
 
 import org.drulabs.popularmovies.BuildConfig;
-import org.drulabs.popularmovies.config.AppConstants;
 
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;

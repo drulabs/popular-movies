@@ -10,10 +10,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleObserver;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 
 public class AppDataHandler implements DataHandler {
 
@@ -25,42 +25,21 @@ public class AppDataHandler implements DataHandler {
     }
 
     @Override
-    public Single<List<Movie>> fetchPopularMovies(int pageNumber) {
-        return Single.create(e -> tmdbApi.getPopularMovies(pageNumber)
-                .subscribe(getSingleMovieObserver(e)));
+    public Observable<List<Movie>> fetchPopularMovies(int pageNumber) {
+        return tmdbApi.getPopularMovies(pageNumber)
+                .flatMap((Function<MovieResult, ObservableSource<List<Movie>>>) movieResult ->
+                        Observable.just(movieResult.getMovies()));
     }
 
     @Override
-    public Single<List<Movie>> fetchTopRatedMovies(int pageNumber) {
-        return Single.create(e -> tmdbApi.getTopRatedMovies(pageNumber)
-                .subscribe(getSingleMovieObserver(e)));
+    public Observable<List<Movie>> fetchTopRatedMovies(int pageNumber) {
+        return tmdbApi.getTopRatedMovies(pageNumber)
+                .flatMap((Function<MovieResult, ObservableSource<List<Movie>>>) movieResult ->
+                        Observable.just(movieResult.getMovies()));
     }
 
     @Override
     public Single<Movie> fetchMovieDetails(long movieId) {
         return tmdbApi.getMovieDetails(movieId);
-    }
-
-    private SingleObserver<MovieResult> getSingleMovieObserver(SingleEmitter<List<Movie>> emitter) {
-        return new SingleObserver<MovieResult>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                // Ignore
-            }
-
-            @Override
-            public void onSuccess(MovieResult result) {
-                if (result != null && result.getMovies() != null) {
-                    emitter.onSuccess(result.getMovies());
-                } else {
-                    emitter.onError(new Throwable("No movie data found"));
-                }
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                emitter.onError(t);
-            }
-        };
     }
 }

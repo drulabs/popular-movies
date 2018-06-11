@@ -2,7 +2,6 @@ package org.drulabs.popularmovies.ui.details;
 
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -36,8 +35,8 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
     private ProgressBar pbDetailsLoader;
     private ImageView imgPoster, imgBackdrop;
     private TextView tvReleaseYear, tvRunTime, tvRating, tvSynopsis;
-    //private CollapsingToolbarLayout toolbarLayout;
-    private Toolbar toolbar;
+    private CollapsingToolbarLayout toolbarLayout;
+    // private Toolbar toolbar;
 
     @Inject
     DetailsContract.Presenter presenter;
@@ -66,7 +65,7 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
     }
 
     private void initializeUI() {
-        toolbar = findViewById(R.id.toolbar_details);
+        Toolbar toolbar = findViewById(R.id.toolbar_details);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -76,7 +75,7 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
         clDetailsHolder = findViewById(R.id.cl_details_holder);
         pbDetailsLoader = findViewById(R.id.pb_details_loader);
 
-        // toolbarLayout = findViewById(R.id.toolbar_details_collapsing);
+        toolbarLayout = findViewById(R.id.toolbar_details_collapsing);
 
         imgPoster = findViewById(R.id.img_detail_poster);
         imgBackdrop = findViewById(R.id.img_detail_backdrop);
@@ -91,7 +90,7 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
         Picasso.with(this)
                 .load(posterUrl)
                 .placeholder(R.drawable.ic_placeholder)
-                .error(R.mipmap.ic_launcher)
+                .error(R.drawable.ic_placeholder)
                 .into(imgPoster);
     }
 
@@ -99,19 +98,20 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
     public void loadBackdrop(String backdropUrl) {
         Picasso.with(this)
                 .load(backdropUrl)
-                .placeholder(R.drawable.ic_placeholder)
+                .placeholder(R.drawable.ic_backdrop)
+                .error(R.drawable.ic_backdrop)
                 .into(imgBackdrop);
     }
 
     @Override
     public void loadTitle(String title) {
-        toolbar.setTitle(title);
+        toolbarLayout.setTitle(title);
     }
 
     @Override
     public void loadYear(String year) {
         tvReleaseYear.setText(String.format(Locale.getDefault(), getString(R.string
-                        .format_movie_year), year));
+                .format_movie_year), year));
     }
 
     @Override
