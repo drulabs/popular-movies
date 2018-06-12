@@ -14,4 +14,5 @@
     <string name="text_movie_backdrop">Movie backdrop image</string>
     <string name="text_favourite_icon">Favorite / unfavorite the movie</string>
     <string name="txt_synopsis">Overview</string>
+    <string name="text_no_internet">Please check your internet connection</string>
 </resources>

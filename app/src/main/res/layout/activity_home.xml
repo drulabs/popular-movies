@@ -36,6 +36,7 @@
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:onClick="openInternetSettings"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -51,6 +52,20 @@
                 app:spanCount="2"
                 tools:listitem="@layout/item_movie"
                 tools:spanCount="2" />
+
+
+            <TextView
+                android:id="@+id/tv_no_internet"
+                style="@style/detail_movie_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawablePadding="@dimen/margin_medium"
+                android:drawableTop="@drawable/ic_dead_smiley"
+                android:gravity="center"
+                android:text="@string/text_no_internet"
+                android:textColor="@color/colorPrimary"
+                android:visibility="gone" />
         </FrameLayout>
 
     </android.support.constraint.ConstraintLayout>

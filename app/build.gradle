@@ -56,4 +56,14 @@ dependencies {
     // GSON ends
     implementation "com.android.support:recyclerview-v7:$rootProject.supportLibVersion"
     implementation "com.android.support:design:$rootProject.supportLibVersion"
+
+    // ViewModel and LiveData
+    implementation "android.arch.lifecycle:extensions:$rootProject.lifecycle_version"
+    implementation "android.arch.lifecycle:common-java8:$rootProject.lifecycle_version"
+    // optional - ReactiveStreams support for LiveData
+    implementation "android.arch.lifecycle:reactivestreams:$rootProject.lifecycle_version"
+    implementation "android.arch.persistence.room:runtime:$rootProject.room_version"
+    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.room_version"
+    // optional - RxJava support for Room
+    implementation "android.arch.persistence.room:rxjava2:$rootProject.room_version"
 }

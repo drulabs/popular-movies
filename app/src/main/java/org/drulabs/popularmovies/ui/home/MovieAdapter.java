@@ -85,7 +85,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieVH> {
             Picasso.with(itemView.getContext())
                     .load(posterUrl)
                     .placeholder(R.drawable.ic_placeholder)
-                    .error(R.drawable.ic_placeholder)
+                    .error(R.drawable.ic_dead_smiley)
                     .into(posterImg);
             itemView.setOnClickListener(v -> listener.onClick(movie));
 

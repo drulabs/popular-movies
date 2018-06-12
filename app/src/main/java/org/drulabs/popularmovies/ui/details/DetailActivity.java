@@ -98,12 +98,12 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
         Picasso.with(this)
                 .load(posterUrl)
                 .placeholder(R.drawable.ic_placeholder)
-                .error(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_dead_smiley)
                 .into(imgPoster);
         Picasso.with(this)
                 .load(posterUrl)
                 .placeholder(R.drawable.ic_placeholder)
-                .error(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_dead_smiley)
                 .into(imgBackground);
         animate(imgPoster);
     }

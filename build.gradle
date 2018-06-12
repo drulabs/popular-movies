@@ -29,6 +29,8 @@ task clean(type: Delete) {
 // Define versions in a singleplace
 ext {
     // App dependencies
+    room_version = "1.1.0"
+    lifecycle_version = "1.1.1"
     supportLibVersion = "27.1.1"
     daggerVersion = '2.11'
     junitVersion = '4.12'

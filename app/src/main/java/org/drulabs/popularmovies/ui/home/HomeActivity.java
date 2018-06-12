@@ -15,6 +15,7 @@ import android.view.Display;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.drulabs.popularmovies.R;
@@ -24,8 +25,9 @@ import org.drulabs.popularmovies.data.models.Movie;
 import org.drulabs.popularmovies.di.ActivityScope;
 import org.drulabs.popularmovies.di.DaggerViewComponent;
 import org.drulabs.popularmovies.di.ViewModule;
-import org.drulabs.popularmovies.ui.details.DetailActivity;
 import org.drulabs.popularmovies.ui.custom.EndlessScrollListener;
+import org.drulabs.popularmovies.ui.details.DetailActivity;
+import org.drulabs.popularmovies.utils.Utility;
 
 import java.util.List;
 
@@ -49,6 +51,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     private SwipeRefreshLayout srHomeLayoutHolder;
     private RecyclerView rvMovies;
+    private TextView tvNoInternet;
 
     private boolean isFirstLoadDone = false;
 
@@ -65,7 +68,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 .build()
                 .inject(this);
 
-        presenter.start();
+        if (Utility.isOnline(this)) {
+            presenter.start();
+        } else {
+            tvNoInternet.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initializeUI() {
@@ -80,6 +87,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         rvMovies = findViewById(R.id.rv_movies);
 
         int spanCount = calculateBestSpanCount();
+
+        tvNoInternet = findViewById(R.id.tv_no_internet);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, spanCount);
         rvMovies.setLayoutManager(gridLayoutManager);
@@ -114,6 +123,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     @Override
     public void appendMovies(@NonNull List<Movie> movies) {
         moviesAdapter.append(movies);
+        tvNoInternet.setVisibility(View.GONE);
     }
 
     @Override
@@ -121,6 +131,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         Log.d("reload", "reload: called");
         moviesAdapter.clearAndReload(movies);
         isFirstLoadDone = true;
+        tvNoInternet.setVisibility(View.GONE);
     }
 
     @Override
@@ -204,5 +215,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    public void openInternetSettings(View view) {
+        startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
     }
 }

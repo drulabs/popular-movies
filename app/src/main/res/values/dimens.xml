@@ -14,4 +14,5 @@
 
     <!-- Others -->
     <dimen name="movie_anchor_width">120dp</dimen>
+    <dimen name="home_smiley_size">56dp</dimen>
 </resources>
