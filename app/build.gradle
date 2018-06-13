@@ -57,6 +57,9 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:$rootProject.supportLibVersion"
     implementation "com.android.support:design:$rootProject.supportLibVersion"
 
+    // Circular image view
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
+
     // ViewModel and LiveData
     implementation "android.arch.lifecycle:extensions:$rootProject.lifecycle_version"
     implementation "android.arch.lifecycle:common-java8:$rootProject.lifecycle_version"

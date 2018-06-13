@@ -13,6 +13,6 @@
     <dimen name="txt_large">24sp</dimen>
 
     <!-- Others -->
-    <dimen name="movie_anchor_width">120dp</dimen>
+    <dimen name="movie_anchor_width">96dp</dimen>
     <dimen name="home_smiley_size">56dp</dimen>
 </resources>

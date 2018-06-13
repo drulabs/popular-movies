@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:contentDescription="@string/app_name"
         android:scaleType="centerCrop"
-        tools:src="@drawable/ic_backdrop" />
+        android:src="@drawable/ic_backdrop" />
 
     <View
         android:layout_width="match_parent"

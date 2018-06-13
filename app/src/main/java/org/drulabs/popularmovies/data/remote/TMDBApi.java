@@ -1,7 +1,9 @@
 package org.drulabs.popularmovies.data.remote;
 
+import org.drulabs.popularmovies.data.models.CreditResult;
 import org.drulabs.popularmovies.data.models.Movie;
 import org.drulabs.popularmovies.data.models.MovieResult;
+import org.drulabs.popularmovies.data.models.VideoResult;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -25,4 +27,13 @@ public interface TMDBApi {
 
     @GET("movie/{movieId}")
     Single<Movie> getMovieDetails(@Path("movieId") long movieId);
+
+    @GET("movie/{movieId}/videos")
+    Observable<VideoResult> getMovieVideos(@Path("movieId") long movieId);
+
+    @GET("movie/{movieId}/reviews")
+    Observable<VideoResult> getMovieReviews(@Path("movieId") long movieId);
+
+    @GET("movie/{movie_id}/credits")
+    Observable<CreditResult> getMovieCredits(@Path("movieId") long movieId);
 }

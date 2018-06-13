@@ -1,5 +1,10 @@
 package org.drulabs.popularmovies.ui.home;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
+
+import org.drulabs.popularmovies.config.AppConstants;
 import org.drulabs.popularmovies.data.DataHandler;
 import org.drulabs.popularmovies.data.models.Movie;
 
@@ -54,7 +59,7 @@ public class HomePresenter implements HomeContract.Presenter {
         dataHandler.fetchPopularMovies(pageNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(getNewMovieObserver(loadNextBatch));
+                .subscribe(getNewMovieObserver(loadNextBatch, AppConstants.SELECTION_POPULAR_MOVIES));
     }
 
     @Override
@@ -66,7 +71,47 @@ public class HomePresenter implements HomeContract.Presenter {
         dataHandler.fetchTopRatedMovies(pageNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(getNewMovieObserver(loadNextBatch));
+                .subscribe(getNewMovieObserver(loadNextBatch, AppConstants.SELECTION_TOP_RATED_MOVIES));
+    }
+
+    @Override
+    public void fetchAllFavoriteMovies(@NonNull AppCompatActivity appCompatActivity) {
+        HomeViewModel homeViewModel = ViewModelProviders.of(appCompatActivity).get(HomeViewModel
+                .class);
+//        if (!homeViewModel.getFavoriteMovies().hasActiveObservers()) {
+        homeViewModel.getFavoriteMovies().removeObservers(appCompatActivity);
+        homeViewModel.getFavoriteMovies().observe(appCompatActivity, movies -> {
+            view.reload(movies, AppConstants.SELECTION_FAVORITE_MOVIES);
+            view.hideLoading();
+        });
+//        } else {
+//            view.reload(homeViewModel.getFavoriteMovies().getValue(), AppConstants
+//                    .SELECTION_FAVORITE_MOVIES);
+//            view.hideLoading();
+//        }
+    }
+
+    @Override
+    public void fetchCachedPopularMovies(@NonNull AppCompatActivity appCompatActivity) {
+        HomeViewModel homeViewModel = ViewModelProviders.of(appCompatActivity).get(HomeViewModel
+                .class);
+        homeViewModel.getTopRatedMovies().removeObservers(appCompatActivity);
+        homeViewModel.getPopularMovies().observe(appCompatActivity, movies -> {
+            view.reload(movies, AppConstants.SELECTION_POPULAR_MOVIES);
+            view.hideLoading();
+        });
+    }
+
+    @Override
+    public void fetchCachedTopRatedMovies(@NonNull AppCompatActivity appCompatActivity) {
+        HomeViewModel homeViewModel = ViewModelProviders.of(appCompatActivity).get(HomeViewModel
+                .class);
+        homeViewModel.getTopRatedMovies().removeObservers(appCompatActivity);
+        homeViewModel.getTopRatedMovies().observe(appCompatActivity, movies -> {
+            view.reload(movies, AppConstants.SELECTION_TOP_RATED_MOVIES);
+            view.hideLoading();
+        });
+
     }
 
 
@@ -75,7 +120,7 @@ public class HomePresenter implements HomeContract.Presenter {
         disposables.dispose();
     }
 
-    private Observer<List<Movie>> getNewMovieObserver(boolean loadNextBatch) {
+    private Observer<List<Movie>> getNewMovieObserver(boolean loadNextBatch, int category) {
         return new Observer<List<Movie>>() {
             @Override
             public void onSubscribe(Disposable d) {
@@ -84,10 +129,10 @@ public class HomePresenter implements HomeContract.Presenter {
 
             @Override
             public void onNext(List<Movie> movies) {
-                if(loadNextBatch){
+                if (loadNextBatch) {
                     view.appendMovies(movies);
                 } else {
-                    view.reload(movies);
+                    view.reload(movies, category);
                 }
             }
 

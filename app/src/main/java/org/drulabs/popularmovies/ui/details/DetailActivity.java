@@ -21,6 +21,8 @@ import org.drulabs.popularmovies.application.AppClass;
 import org.drulabs.popularmovies.di.ActivityScope;
 import org.drulabs.popularmovies.di.DaggerViewComponent;
 import org.drulabs.popularmovies.di.ViewModule;
+import org.drulabs.popularmovies.ui.custom.FloatingImageView;
+import org.drulabs.popularmovies.utils.Utility;
 
 import java.util.Locale;
 
@@ -36,7 +38,8 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
 
     private View clDetailsHolder;
     private ProgressBar pbDetailsLoader;
-    private ImageView imgPoster, imgBackdrop, imgBackground;
+    private ImageView imgBackdrop, imgBackground, imgFavorite;
+    private FloatingImageView imgPoster;
     private TextView tvReleaseYear, tvRunTime, tvRating, tvSynopsis;
     private CollapsingToolbarLayout toolbarLayout;
     private NestedScrollView nsvDetails;
@@ -61,7 +64,12 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
         Bundle extras = getIntent().getExtras();
         if (extras != null && extras.containsKey(KEY_MOVIE_ID)) {
             long movieId = extras.getLong(KEY_MOVIE_ID);
-            presenter.start(movieId);
+
+            boolean isOnline = Utility.isOnline(this);
+            if (isOnline) {
+                presenter.start(movieId);
+            }
+            presenter.observeCurrentMovie(this, movieId, !isOnline);
         } else {
             onError();
             finish();
@@ -86,26 +94,30 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
         imgPoster = findViewById(R.id.img_detail_poster);
         imgBackdrop = findViewById(R.id.img_detail_backdrop);
         imgBackground = findViewById(R.id.img_background_image);
+        imgFavorite = findViewById(R.id.img_detail_favorite);
 
         tvReleaseYear = findViewById(R.id.tv_detail_movie_year);
         tvRunTime = findViewById(R.id.tv_detail_movie_runtime);
         tvRating = findViewById(R.id.tv_detail_movie_rating);
         tvSynopsis = findViewById(R.id.tv_details_synopsis);
+
+        imgFavorite.setOnClickListener(v -> {
+            presenter.favoriteTapped();
+        });
     }
 
     @Override
     public void loadPoster(String posterUrl) {
+        Picasso.with(this).cancelRequest(imgBackground);
+        Picasso.with(this).cancelRequest(imgPoster);
         Picasso.with(this)
                 .load(posterUrl)
                 .placeholder(R.drawable.ic_placeholder)
-                .error(R.drawable.ic_dead_smiley)
                 .into(imgPoster);
         Picasso.with(this)
                 .load(posterUrl)
                 .placeholder(R.drawable.ic_placeholder)
-                .error(R.drawable.ic_dead_smiley)
                 .into(imgBackground);
-        animate(imgPoster);
     }
 
     @Override
@@ -125,7 +137,8 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
     @Override
     public void loadReleaseDate(String releaseDate) {
         tvReleaseYear.setVisibility(View.VISIBLE);
-        tvReleaseYear.setText(releaseDate);
+        tvReleaseYear.setText(String.format(Locale.getDefault(), getString(R.string
+                .format_release_date), releaseDate));
     }
 
     @Override
@@ -145,6 +158,21 @@ public class DetailActivity extends AppCompatActivity implements DetailsContract
     @Override
     public void loadSummary(String summary) {
         tvSynopsis.setText(summary);
+    }
+
+    @Override
+    public void markFavorite() {
+        imgFavorite.setImageResource(R.drawable.ic_star_filled);
+    }
+
+    @Override
+    public void unmarkFavorite() {
+        imgFavorite.setImageResource(R.drawable.ic_star_filled_gray);
+    }
+
+    @Override
+    public void executeAnimations() {
+        animate(imgPoster);
     }
 
     @Override

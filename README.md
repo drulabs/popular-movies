@@ -21,12 +21,12 @@ field currently hold some dummy string.
 
 ## Additional features
 Apart from the rubric, the app has following additional features
-- The api loads 20 results at a time, this app has a **LOAD MORE** functionaity, which loads 
-further results into the recycler view. The load more button gets visible when recycler view 
+- The api loads 20 videos at a time, this app has a **LOAD MORE** functionaity, which loads
+further videos into the recycler view. The load more button gets visible when recycler view
 reaches bottom.
 - Used Coordinator layout and Nested scroll view. The Mockup looked like a coordinator layout.
 - Spinner at the toolbar makes api calls every time the selection changes, this resets the number
- of movies to default 20 results. More results can be loaded using the **LOAD MORE** feature.
+ of movies to default 20 videos. More videos can be loaded using the **LOAD MORE** feature.
 - As many linter issues resolved as possible, some classes that are used by libraries show 
 unused, hence left those. Lint rules needs to be updated.
 

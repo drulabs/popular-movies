@@ -4,6 +4,8 @@ import org.drulabs.popularmovies.data.models.Movie;
 
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -17,4 +19,8 @@ public interface DataHandler {
     Observable<List<Movie>> fetchTopRatedMovies(int pageNumber);
 
     Single<Movie> fetchMovieDetails(long movieId);
+
+    Completable addFavoriteMovie(Movie movie);
+
+    Completable deleteFavoritedMovie(Movie currentMovie);
 }
