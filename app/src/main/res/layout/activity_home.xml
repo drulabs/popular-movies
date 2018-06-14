@@ -48,7 +48,7 @@
                 android:id="@+id/rv_movies"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layoutAnimation="@anim/layout_animation_fall_down"
+                android:layoutAnimation="@anim/layout_animation_fall_up"
                 app:spanCount="2"
                 tools:listitem="@layout/item_movie"
                 tools:spanCount="2" />

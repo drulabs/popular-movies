@@ -7,10 +7,16 @@ import android.support.v7.app.AppCompatActivity;
 import org.drulabs.popularmovies.config.AppConstants;
 import org.drulabs.popularmovies.data.DataHandler;
 import org.drulabs.popularmovies.data.local.MovieDatabase;
+import org.drulabs.popularmovies.data.models.Cast;
 import org.drulabs.popularmovies.data.models.Movie;
+import org.drulabs.popularmovies.data.models.Review;
+import org.drulabs.popularmovies.data.models.Video;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -63,6 +69,7 @@ public class DetailsPresenter implements DetailsContract.Presenter {
                         view.hideLoading();
                     }
                 });
+        fetchMovieDetails(movieId);
     }
 
     private void populateMovieDetails(@NonNull Movie movie, boolean executeAnimations) {
@@ -118,5 +125,82 @@ public class DetailsPresenter implements DetailsContract.Presenter {
     @Override
     public void destroy() {
         disposables.dispose();
+    }
+
+    private void fetchMovieDetails(long movieId) {
+        dataHandler.fetchMovieVideos(movieId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Video>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(List<Video> videos) {
+                        view.loadVideos(videos);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        view.hideVideoSection();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+        dataHandler.fetchMovieCast(movieId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Cast>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(List<Cast> castList) {
+                        view.loadCast(castList);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        view.hideCastSection();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+        dataHandler.fetchMovieReviews(movieId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Review>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(List<Review> reviewList) {
+                        view.loadReviews(reviewList);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        view.hideReviewsSection();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 }

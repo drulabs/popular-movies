@@ -13,6 +13,7 @@ public class ReviewResult {
     @Expose
     private Long page;
     @Expose
+    @SerializedName("results")
     private List<Review> reviews;
     @SerializedName("total_pages")
     private Long totalPages;

@@ -8,12 +8,20 @@
     <string name="text_movie_poster">Movie poster</string>
     <string name="txt_mark_favorite">Mark as favorite</string>
     <string name="txt_trailers_reviews">Trailers and Reviews coming soon</string>
-    <string name="format_runtime" translatable="false">Runtime: %s min</string>
-    <string name="format_rating" translatable="false">IMDB Rating: %s / 10</string>
+    <string name="format_runtime" translatable="false">%s min</string>
+    <string name="format_rating" translatable="false">%s / 10</string>
     <string name="format_release_date" translatable="false">Release date: %s</string>
     <string name="text_movie_backdrop">Movie backdrop image</string>
     <string name="text_favourite_icon">Favorite / unfavorite the movie</string>
     <string name="txt_synopsis">Overview</string>
     <string name="text_no_internet">Please check your internet connection</string>
     <string name="txt_no_data">No data to display</string>
+    <string name="txt_trailers">Trailers</string>
+    <string name="txt_cast">Cast</string>
+    <string name="txt_reviews">Reviews</string>
+    <string name="shared_via_pop_movies">Shared via Pop Movies</string>
+    <string name="text_share_now">Share the video</string>
+    <string name="unable_to_share">No app found for sharing</string>
+    <string name="txt_loading">Loading…</string>
+    <string name="txt_share">Share</string>
 </resources>

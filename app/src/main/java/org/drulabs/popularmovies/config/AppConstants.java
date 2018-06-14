@@ -8,4 +8,8 @@ public class AppConstants {
     public static final int SELECTION_POPULAR_MOVIES = 0;
     public static final int SELECTION_TOP_RATED_MOVIES = 1;
     public static final int SELECTION_FAVORITE_MOVIES = 2;
+
+    // Trailers / videos related
+    public static final String VIDEO_THUMB_BASE = "https://img.youtube.com/vi/%s/0.jpg";
+    public static final String MOVIE_VIDEO_BASE = "https://youtu.be/%s";
 }

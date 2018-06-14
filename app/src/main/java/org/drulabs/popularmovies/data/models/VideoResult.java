@@ -3,6 +3,7 @@ package org.drulabs.popularmovies.data.models;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 
 public class VideoResult {
@@ -10,6 +11,7 @@ public class VideoResult {
     @Expose
     private Long id;
     @Expose
+    @SerializedName("results")
     private List<Video> videos;
 
     public Long getId() {

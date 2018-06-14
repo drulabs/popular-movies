@@ -5,8 +5,14 @@ import android.content.Context;
 import org.drulabs.popularmovies.config.AppConstants;
 import org.drulabs.popularmovies.data.local.MovieDatabase;
 import org.drulabs.popularmovies.data.local.MoviesDao;
+import org.drulabs.popularmovies.data.models.Cast;
+import org.drulabs.popularmovies.data.models.CreditResult;
 import org.drulabs.popularmovies.data.models.Movie;
 import org.drulabs.popularmovies.data.models.MovieResult;
+import org.drulabs.popularmovies.data.models.Review;
+import org.drulabs.popularmovies.data.models.ReviewResult;
+import org.drulabs.popularmovies.data.models.Video;
+import org.drulabs.popularmovies.data.models.VideoResult;
 import org.drulabs.popularmovies.data.remote.TMDBApi;
 
 import java.util.List;
@@ -59,6 +65,27 @@ public class AppDataHandler implements DataHandler {
     @Override
     public Single<Movie> fetchMovieDetails(long movieId) {
         return tmdbApi.getMovieDetails(movieId);
+    }
+
+    @Override
+    public Observable<List<Review>> fetchMovieReviews(long movieId) {
+        return tmdbApi.getMovieReviews(movieId)
+                .flatMap((Function<ReviewResult, ObservableSource<List<Review>>>) reviewResult ->
+                        Observable.just(reviewResult.getReviews()));
+    }
+
+    @Override
+    public Observable<List<Video>> fetchMovieVideos(long movieId) {
+        return tmdbApi.getMovieVideos(movieId)
+                .flatMap((Function<VideoResult, ObservableSource<List<Video>>>) videoResult ->
+                        Observable.just(videoResult.getVideos()));
+    }
+
+    @Override
+    public Observable<List<Cast>> fetchMovieCast(long movieId) {
+        return tmdbApi.getMovieCredits(movieId)
+                .flatMap((Function<CreditResult, ObservableSource<List<Cast>>>) creditResult ->
+                        Observable.just(creditResult.getCast()));
     }
 
     @Override
