@@ -77,15 +77,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         }
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_CURRENT_SELECTION)) {
-            currentSelection = savedInstanceState.getInt(KEY_CURRENT_SELECTION);
-            onRefresh();
-        }
-    }
-
     private void initializeUI() {
 
         Toolbar toolbar = findViewById(R.id.toolbar_home);
@@ -238,6 +229,24 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_CURRENT_SELECTION, currentSelection);
+        int firstVisibleItem = ((GridLayoutManager) rvMovies.getLayoutManager())
+                .findFirstCompletelyVisibleItemPosition();
+        outState.putInt("pos", firstVisibleItem);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(KEY_CURRENT_SELECTION)) {
+                currentSelection = savedInstanceState.getInt(KEY_CURRENT_SELECTION);
+                onRefresh();
+            }
+            if (savedInstanceState.containsKey("pos")) {
+                int position = savedInstanceState.getInt("pos");
+                rvMovies.smoothScrollToPosition(position);
+            }
+        }
     }
 
     @Override
