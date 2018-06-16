@@ -20,6 +20,8 @@ import io.reactivex.schedulers.Schedulers;
 
 public class HomePresenter implements HomeContract.Presenter {
 
+    private static final int PAGE_SIZE = 20;
+
     private final HomeContract.View view;
     private final DataHandler dataHandler;
 
@@ -97,6 +99,9 @@ public class HomePresenter implements HomeContract.Presenter {
                 .class);
         homeViewModel.getTopRatedMovies().removeObservers(appCompatActivity);
         homeViewModel.getPopularMovies().observe(appCompatActivity, movies -> {
+            if (movies!=null) {
+                pageNumber = movies.size() / PAGE_SIZE;
+            }
             view.reload(movies, AppConstants.SELECTION_POPULAR_MOVIES);
             view.hideLoading();
         });
@@ -108,6 +113,9 @@ public class HomePresenter implements HomeContract.Presenter {
                 .class);
         homeViewModel.getTopRatedMovies().removeObservers(appCompatActivity);
         homeViewModel.getTopRatedMovies().observe(appCompatActivity, movies -> {
+            if (movies!=null) {
+                pageNumber = movies.size() / PAGE_SIZE;
+            }
             view.reload(movies, AppConstants.SELECTION_TOP_RATED_MOVIES);
             view.hideLoading();
         });
