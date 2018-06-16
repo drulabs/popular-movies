@@ -23,13 +23,13 @@
     </style>
 
     <style name="expanded_title_appearance">
-        <item name="android:textSize">@dimen/txt_large</item>
+        <item name="android:textSize">@dimen/txt_x_large</item>
         <item name="android:textStyle">bold|italic</item>
     </style>
 
     <style name="detail_movie_style">
-        <item name="android:textSize">@dimen/txt_large</item>
-        <item name="android:textColor">@color/dark_grey</item>
+        <item name="android:textSize">@dimen/txt_medium</item>
+        <item name="android:textColor">@color/lightGrey</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_marginTop">@dimen/margin_medium</item>
     </style>

@@ -1,9 +1,17 @@
 package org.drulabs.popularmovies.data.models;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+@Entity(tableName = "moviesdb")
 public class Movie {
 
+    @PrimaryKey
+    @ColumnInfo(name = "id")
     @SerializedName("id")
     private long id;
 
@@ -12,6 +20,10 @@ public class Movie {
 
     @SerializedName("poster_path")
     private String posterPath;
+
+    @SerializedName("backdrop_path")
+
+    private String backdropPath;
 
     @SerializedName("original_title")
     private String originalTitle;
@@ -25,6 +37,7 @@ public class Movie {
     @SerializedName("overview")
     private String overview;
 
+    @ColumnInfo(name = "averageVote")
     @SerializedName("vote_average")
     private double voteAverage;
 
@@ -46,6 +59,7 @@ public class Movie {
     @SerializedName("budget")
     private long budget;
 
+    @ColumnInfo(name = "popularity")
     @SerializedName("popularity")
     private double popularity;
 
@@ -54,6 +68,36 @@ public class Movie {
 
     @SerializedName("homepage")
     private String homepage;
+
+    @ColumnInfo(name = "favorite")
+    private boolean isFavorite;
+
+    @ColumnInfo(name = "category")
+    private int category;
+
+//    public Movie(long id, String title, String posterPath, String backdropPath, String
+//            originalTitle, boolean isAdult, String releaseDate, String overview, double
+//            voteAverage, long voteCount, String tagline, String status, int runtime, long
+//            revenue, long budget, double popularity, String imdbId, String homepage) {
+//        this.id = id;
+//        this.title = title;
+//        this.posterPath = posterPath;
+//        this.backdropPath = backdropPath;
+//        this.originalTitle = originalTitle;
+//        this.isAdult = isAdult;
+//        this.releaseDate = releaseDate;
+//        this.overview = overview;
+//        this.voteAverage = voteAverage;
+//        this.voteCount = voteCount;
+//        this.tagline = tagline;
+//        this.status = status;
+//        this.runtime = runtime;
+//        this.revenue = revenue;
+//        this.budget = budget;
+//        this.popularity = popularity;
+//        this.imdbId = imdbId;
+//        this.homepage = homepage;
+//    }
 
     public long getId() {
         return id;
@@ -77,6 +121,14 @@ public class Movie {
 
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
+    }
+
+    public String getBackdropPath() {
+        return backdropPath;
+    }
+
+    public void setBackdropPath(String backdropPath) {
+        this.backdropPath = backdropPath;
     }
 
     public String getOriginalTitle() {
@@ -189,5 +241,26 @@ public class Movie {
 
     public void setHomepage(String homepage) {
         this.homepage = homepage;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
+    public int getCategory() {
+        return category;
+    }
+
+    public void setCategory(int category) {
+        this.category = category;
+    }
+
+    @Override
+    public String toString() {
+        return (new Gson()).toJson(this);
     }
 }

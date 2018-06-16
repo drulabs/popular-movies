@@ -2,27 +2,33 @@ package org.drulabs.popularmovies.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.drulabs.popularmovies.R;
 import org.drulabs.popularmovies.application.AppClass;
+import org.drulabs.popularmovies.config.AppConstants;
 import org.drulabs.popularmovies.data.models.Movie;
 import org.drulabs.popularmovies.di.ActivityScope;
 import org.drulabs.popularmovies.di.DaggerViewComponent;
 import org.drulabs.popularmovies.di.ViewModule;
+import org.drulabs.popularmovies.ui.custom.EndlessScrollListener;
 import org.drulabs.popularmovies.ui.details.DetailActivity;
+import org.drulabs.popularmovies.utils.Utility;
 
 import java.util.List;
 
@@ -33,14 +39,12 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         .MovieInteractionListener, SwipeRefreshLayout.OnRefreshListener, AdapterView
         .OnItemSelectedListener {
 
-    private static final int RECYCLER_VIEW_SPAN_COUNT = 2;
+    private static final int DEFAULT_SPAN_COUNT = AppConstants.DEFAULT_SPAN_COUNT;
+    private static final int MAX_SPAN_COUNT = AppConstants.MAX_SPAN_COUNT;
+    private static final String KEY_CURRENT_SELECTION = "currentSpinnerSelection";
+    private static final String KEY_FIRST_VISIBLE_ITEM = "firstVisibleItem";
 
-    private static final float ALPHA_GREYED_OUT = 0.3f;
-    private static final float ALPHA_REGULAR = 1.0f;
-
-    private static final int SELECTION_POPULAR_MOVIES = 0;
-    private static final int SELECTION_TOP_RATED_MOVIES = 1;
-    private int currentSelection = SELECTION_POPULAR_MOVIES;
+    private int currentSelection = AppConstants.SELECTION_POPULAR_MOVIES;
 
     @Inject
     HomeContract.Presenter presenter;
@@ -48,8 +52,10 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private MovieAdapter moviesAdapter;
 
     private SwipeRefreshLayout srHomeLayoutHolder;
-    private Button btnLoadMore;
     private RecyclerView rvMovies;
+    private TextView tvNoDataMessage;
+
+    private int firstVisibleItem = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +70,17 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 .build()
                 .inject(this);
 
-        presenter.start();
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_CURRENT_SELECTION)) {
+            currentSelection = savedInstanceState.getInt(KEY_CURRENT_SELECTION);
+            firstVisibleItem = savedInstanceState.getInt(KEY_FIRST_VISIBLE_ITEM);
+            loadCachedData(currentSelection);
+        } else {
+            if (Utility.isOnline(this)) {
+                presenter.start();
+            } else {
+                presenter.fetchCachedPopularMovies(this);
+            }
+        }
     }
 
     private void initializeUI() {
@@ -77,26 +93,32 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         }
 
         rvMovies = findViewById(R.id.rv_movies);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, RECYCLER_VIEW_SPAN_COUNT);
+
+        int spanCount = calculateBestSpanCount();
+
+        tvNoDataMessage = findViewById(R.id.tv_no_data_message);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, spanCount);
         rvMovies.setLayoutManager(gridLayoutManager);
-        moviesAdapter = new MovieAdapter(this);
+        moviesAdapter = new MovieAdapter(this, spanCount);
         rvMovies.setAdapter(moviesAdapter);
 
         srHomeLayoutHolder = findViewById(R.id.sr_home_layout_holder);
         srHomeLayoutHolder.setOnRefreshListener(this);
 
         Spinner spnSortOptions = findViewById(R.id.spn_sort_options);
+        spnSortOptions.setSelected(false);
+        spnSortOptions.setSelection(currentSelection, false);
         spnSortOptions.setOnItemSelectedListener(this);
 
-        btnLoadMore = findViewById(R.id.btn_load_more);
-        btnLoadMore.setOnClickListener(v -> {
-            if (!srHomeLayoutHolder.isRefreshing()) {
-                btnLoadMore.setVisibility(View.GONE);
+        rvMovies.addOnScrollListener(new EndlessScrollListener(gridLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 switch (currentSelection) {
-                    case SELECTION_POPULAR_MOVIES:
+                    case AppConstants.SELECTION_POPULAR_MOVIES:
                         presenter.fetchPopularMovies(true);
                         break;
-                    case SELECTION_TOP_RATED_MOVIES:
+                    case AppConstants.SELECTION_TOP_RATED_MOVIES:
                         presenter.fetchTopRatedMovies(true);
                         break;
                     default:
@@ -104,34 +126,42 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 }
             }
         });
-
-        rvMovies.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (!recyclerView.canScrollVertically(1)) {
-                    btnLoadMore.setVisibility(View.VISIBLE);
-                } else {
-                    btnLoadMore.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-            }
-        });
-        rvMovies.setSaveEnabled(true);
     }
 
     @Override
     public void appendMovies(@NonNull List<Movie> movies) {
         moviesAdapter.append(movies);
+        tvNoDataMessage.setVisibility(View.GONE);
     }
 
     @Override
-    public void reload(@NonNull List<Movie> movies) {
-        moviesAdapter.clearAndReload(movies);
+    public void reload(@NonNull List<Movie> movies, int category) {
+        Log.d("reload", "reload: called");
+
+        if (category != currentSelection) {
+            return;
+        }
+
+        @StringRes int msgResId;
+        if (Utility.isOnline(this)) {
+            msgResId = R.string.txt_no_data;
+        } else {
+            msgResId = R.string.text_no_internet;
+        }
+
+        if (movies.size() > 0) {
+            rvMovies.setVisibility(View.VISIBLE);
+            moviesAdapter.clearAndReload(movies);
+            tvNoDataMessage.setVisibility(View.GONE);
+            if (firstVisibleItem < movies.size()) {
+                rvMovies.scrollToPosition(firstVisibleItem);
+                firstVisibleItem = 0;
+            }
+        } else {
+            tvNoDataMessage.setText(msgResId);
+            tvNoDataMessage.setVisibility(View.VISIBLE);
+            rvMovies.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -144,13 +174,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     @Override
     public void showLoading() {
         srHomeLayoutHolder.setRefreshing(true);
-        rvMovies.setAlpha(ALPHA_GREYED_OUT);
     }
 
     @Override
     public void hideLoading() {
         srHomeLayoutHolder.setRefreshing(false);
-        rvMovies.setAlpha(ALPHA_REGULAR);
     }
 
     @Override
@@ -163,6 +191,16 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         return presenter;
     }
 
+    private int calculateBestSpanCount() {
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
+        float screenWidth = outMetrics.widthPixels;
+        int spanCount = Math.round(screenWidth / AppConstants.DEFAULT_POSTER_WIDTH);
+        return (spanCount < DEFAULT_SPAN_COUNT) ? DEFAULT_SPAN_COUNT : (spanCount >
+                MAX_SPAN_COUNT ? MAX_SPAN_COUNT : spanCount);
+    }
+
     @Override
     public void onClick(Movie movie) {
         presenter.onMovieTapped(movie);
@@ -171,17 +209,53 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     @Override
     public void onRefresh() {
         // Layout is refreshed, load freshly
+        boolean isOnline = Utility.isOnline(this);
         switch (currentSelection) {
-            case SELECTION_POPULAR_MOVIES:
-                presenter.fetchPopularMovies(false);
+            case AppConstants.SELECTION_POPULAR_MOVIES:
+                if (isOnline) {
+                    presenter.fetchPopularMovies(false);
+                } else {
+                    presenter.fetchCachedPopularMovies(this);
+                }
                 break;
-            case SELECTION_TOP_RATED_MOVIES:
-                presenter.fetchTopRatedMovies(false);
+            case AppConstants.SELECTION_TOP_RATED_MOVIES:
+                if (isOnline) {
+                    presenter.fetchTopRatedMovies(false);
+                } else {
+                    presenter.fetchCachedTopRatedMovies(this);
+                }
+                break;
+            case AppConstants.SELECTION_FAVORITE_MOVIES:
+                presenter.fetchAllFavoriteMovies(this);
                 break;
             default:
                 break;
         }
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_CURRENT_SELECTION, currentSelection);
+        int firstVisibleItem = ((GridLayoutManager) rvMovies.getLayoutManager())
+                .findFirstCompletelyVisibleItemPosition();
+        outState.putInt(KEY_FIRST_VISIBLE_ITEM, firstVisibleItem);
+    }
+
+//    @Override
+//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+//        super.onRestoreInstanceState(savedInstanceState);
+//        if (savedInstanceState != null) {
+//            if (savedInstanceState.containsKey(KEY_CURRENT_SELECTION)) {
+//                currentSelection = savedInstanceState.getInt(KEY_CURRENT_SELECTION);
+//                onRefresh();
+//            }
+//            if (savedInstanceState.containsKey("pos")) {
+//                int position = savedInstanceState.getInt("pos");
+//                rvMovies.smoothScrollToPosition(position);
+//            }
+//        }
+//    }
 
     @Override
     protected void onDestroy() {
@@ -191,12 +265,26 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (position == 0) {
-            currentSelection = SELECTION_POPULAR_MOVIES;
-            presenter.fetchPopularMovies(false);
-        } else {
-            currentSelection = SELECTION_TOP_RATED_MOVIES;
-            presenter.fetchTopRatedMovies(false);
+        currentSelection = position;
+        boolean isOnline = Utility.isOnline(this);
+        switch (position) {
+            case AppConstants.SELECTION_POPULAR_MOVIES:
+                if (isOnline) {
+                    presenter.fetchPopularMovies(false);
+                } else {
+                    presenter.fetchCachedPopularMovies(this);
+                }
+                break;
+            case AppConstants.SELECTION_TOP_RATED_MOVIES:
+                if (isOnline) {
+                    presenter.fetchTopRatedMovies(false);
+                } else {
+                    presenter.fetchCachedTopRatedMovies(this);
+                }
+                break;
+            default:
+                presenter.fetchAllFavoriteMovies(this);
+                break;
         }
         rvMovies.smoothScrollToPosition(0);
     }
@@ -204,5 +292,25 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    public void openInternetSettings(View view) {
+        startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+    }
+
+    private void loadCachedData(int currentSelection) {
+        switch (currentSelection) {
+            case AppConstants.SELECTION_POPULAR_MOVIES:
+                presenter.fetchCachedPopularMovies(this);
+                break;
+            case AppConstants.SELECTION_TOP_RATED_MOVIES:
+                presenter.fetchCachedTopRatedMovies(this);
+                break;
+            case AppConstants.SELECTION_FAVORITE_MOVIES:
+                presenter.fetchAllFavoriteMovies(this);
+                break;
+            default:
+                break;
+        }
     }
 }

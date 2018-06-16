@@ -1,5 +1,10 @@
 package org.drulabs.popularmovies.ui.home;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
+
+import org.drulabs.popularmovies.config.AppConstants;
 import org.drulabs.popularmovies.data.DataHandler;
 import org.drulabs.popularmovies.data.models.Movie;
 
@@ -7,13 +12,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.SingleObserver;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class HomePresenter implements HomeContract.Presenter {
+
+    private static final int PAGE_SIZE = 20;
 
     private final HomeContract.View view;
     private final DataHandler dataHandler;
@@ -54,7 +61,7 @@ public class HomePresenter implements HomeContract.Presenter {
         dataHandler.fetchPopularMovies(pageNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(getNewMovieObserver(loadNextBatch));
+                .subscribe(getNewMovieObserver(loadNextBatch, AppConstants.SELECTION_POPULAR_MOVIES));
     }
 
     @Override
@@ -66,7 +73,53 @@ public class HomePresenter implements HomeContract.Presenter {
         dataHandler.fetchTopRatedMovies(pageNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(getNewMovieObserver(loadNextBatch));
+                .subscribe(getNewMovieObserver(loadNextBatch, AppConstants.SELECTION_TOP_RATED_MOVIES));
+    }
+
+    @Override
+    public void fetchAllFavoriteMovies(@NonNull AppCompatActivity appCompatActivity) {
+        HomeViewModel homeViewModel = ViewModelProviders.of(appCompatActivity).get(HomeViewModel
+                .class);
+//        if (!homeViewModel.getFavoriteMovies().hasActiveObservers()) {
+        homeViewModel.getFavoriteMovies().removeObservers(appCompatActivity);
+        homeViewModel.getFavoriteMovies().observe(appCompatActivity, movies -> {
+            view.reload(movies, AppConstants.SELECTION_FAVORITE_MOVIES);
+            view.hideLoading();
+        });
+//        } else {
+//            view.reload(homeViewModel.getFavoriteMovies().getValue(), AppConstants
+//                    .SELECTION_FAVORITE_MOVIES);
+//            view.hideLoading();
+//        }
+    }
+
+    @Override
+    public void fetchCachedPopularMovies(@NonNull AppCompatActivity appCompatActivity) {
+        HomeViewModel homeViewModel = ViewModelProviders.of(appCompatActivity).get(HomeViewModel
+                .class);
+        homeViewModel.getTopRatedMovies().removeObservers(appCompatActivity);
+        homeViewModel.getPopularMovies().observe(appCompatActivity, movies -> {
+            if (movies!=null) {
+                pageNumber = movies.size() / PAGE_SIZE;
+            }
+            view.reload(movies, AppConstants.SELECTION_POPULAR_MOVIES);
+            view.hideLoading();
+        });
+    }
+
+    @Override
+    public void fetchCachedTopRatedMovies(@NonNull AppCompatActivity appCompatActivity) {
+        HomeViewModel homeViewModel = ViewModelProviders.of(appCompatActivity).get(HomeViewModel
+                .class);
+        homeViewModel.getTopRatedMovies().removeObservers(appCompatActivity);
+        homeViewModel.getTopRatedMovies().observe(appCompatActivity, movies -> {
+            if (movies!=null) {
+                pageNumber = movies.size() / PAGE_SIZE;
+            }
+            view.reload(movies, AppConstants.SELECTION_TOP_RATED_MOVIES);
+            view.hideLoading();
+        });
+
     }
 
 
@@ -75,28 +128,32 @@ public class HomePresenter implements HomeContract.Presenter {
         disposables.dispose();
     }
 
-    private SingleObserver<List<Movie>> getNewMovieObserver(boolean loadNextBatch) {
-        return new SingleObserver<List<Movie>>() {
+    private Observer<List<Movie>> getNewMovieObserver(boolean loadNextBatch, int category) {
+        return new Observer<List<Movie>>() {
             @Override
             public void onSubscribe(Disposable d) {
                 disposables.add(d);
             }
 
             @Override
-            public void onSuccess(List<Movie> movies) {
+            public void onNext(List<Movie> movies) {
                 if (loadNextBatch) {
                     view.appendMovies(movies);
                 } else {
-                    view.reload(movies);
+                    view.reload(movies, category);
                 }
-                pageNumber++;
-                view.hideLoading();
             }
 
             @Override
             public void onError(Throwable e) {
                 view.onError();
                 view.hideLoading();
+            }
+
+            @Override
+            public void onComplete() {
+                view.hideLoading();
+                pageNumber++;
             }
         };
     }
