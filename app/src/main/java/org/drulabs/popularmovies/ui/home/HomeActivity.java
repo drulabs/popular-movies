@@ -267,20 +267,24 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         currentSelection = position;
         boolean isOnline = Utility.isOnline(this);
-        if (position == AppConstants.SELECTION_POPULAR_MOVIES) {
-            if (isOnline) {
-                presenter.fetchPopularMovies(false);
-            } else {
-                presenter.fetchCachedPopularMovies(this);
-            }
-        } else if (position == AppConstants.SELECTION_TOP_RATED_MOVIES) {
-            if (isOnline) {
-                presenter.fetchTopRatedMovies(false);
-            } else {
-                presenter.fetchCachedTopRatedMovies(this);
-            }
-        } else {
-            presenter.fetchAllFavoriteMovies(this);
+        switch (position) {
+            case AppConstants.SELECTION_POPULAR_MOVIES:
+                if (isOnline) {
+                    presenter.fetchPopularMovies(false);
+                } else {
+                    presenter.fetchCachedPopularMovies(this);
+                }
+                break;
+            case AppConstants.SELECTION_TOP_RATED_MOVIES:
+                if (isOnline) {
+                    presenter.fetchTopRatedMovies(false);
+                } else {
+                    presenter.fetchCachedTopRatedMovies(this);
+                }
+                break;
+            default:
+                presenter.fetchAllFavoriteMovies(this);
+                break;
         }
         rvMovies.smoothScrollToPosition(0);
     }

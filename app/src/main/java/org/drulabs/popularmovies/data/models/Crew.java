@@ -4,7 +4,7 @@ package org.drulabs.popularmovies.data.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Crew {
+class Crew {
 
     @SerializedName("credit_id")
     private String creditId;
