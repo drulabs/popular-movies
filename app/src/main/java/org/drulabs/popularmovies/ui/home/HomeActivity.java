@@ -2,7 +2,6 @@ package org.drulabs.popularmovies.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -43,6 +42,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private static final int DEFAULT_SPAN_COUNT = AppConstants.DEFAULT_SPAN_COUNT;
     private static final int MAX_SPAN_COUNT = AppConstants.MAX_SPAN_COUNT;
     private static final String KEY_CURRENT_SELECTION = "currentSpinnerSelection";
+    private static final String KEY_FIRST_VISIBLE_ITEM = "firstVisibleItem";
 
     private int currentSelection = AppConstants.SELECTION_POPULAR_MOVIES;
 
@@ -57,6 +57,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     private boolean isFirstLoadDone = false;
 
+    private int firstVisibleItem = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,11 +72,17 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 .build()
                 .inject(this);
 
+//        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_CURRENT_SELECTION)) {
+//            currentSelection = savedInstanceState.getInt(KEY_CURRENT_SELECTION);
+//            firstVisibleItem = savedInstanceState.getInt(KEY_FIRST_VISIBLE_ITEM);
+//            loadCachedData(currentSelection);
+//        } else {
         if (Utility.isOnline(this)) {
             presenter.start();
         } else {
             presenter.fetchCachedPopularMovies(this);
         }
+//        }
     }
 
     private void initializeUI() {
@@ -147,6 +155,10 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             rvMovies.setVisibility(View.VISIBLE);
             moviesAdapter.clearAndReload(movies);
             tvNoDataMessage.setVisibility(View.GONE);
+            if (firstVisibleItem < movies.size()) {
+                rvMovies.smoothScrollToPosition(firstVisibleItem);
+                firstVisibleItem = 0;
+            }
         } else {
             tvNoDataMessage.setText(msgResId);
             tvNoDataMessage.setVisibility(View.VISIBLE);
@@ -231,23 +243,23 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         outState.putInt(KEY_CURRENT_SELECTION, currentSelection);
         int firstVisibleItem = ((GridLayoutManager) rvMovies.getLayoutManager())
                 .findFirstCompletelyVisibleItemPosition();
-        outState.putInt("pos", firstVisibleItem);
+        outState.putInt(KEY_FIRST_VISIBLE_ITEM, firstVisibleItem);
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(KEY_CURRENT_SELECTION)) {
-                currentSelection = savedInstanceState.getInt(KEY_CURRENT_SELECTION);
-                onRefresh();
-            }
-            if (savedInstanceState.containsKey("pos")) {
-                int position = savedInstanceState.getInt("pos");
-                rvMovies.smoothScrollToPosition(position);
-            }
-        }
-    }
+//    @Override
+//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+//        super.onRestoreInstanceState(savedInstanceState);
+//        if (savedInstanceState != null) {
+//            if (savedInstanceState.containsKey(KEY_CURRENT_SELECTION)) {
+//                currentSelection = savedInstanceState.getInt(KEY_CURRENT_SELECTION);
+//                onRefresh();
+//            }
+//            if (savedInstanceState.containsKey("pos")) {
+//                int position = savedInstanceState.getInt("pos");
+//                rvMovies.smoothScrollToPosition(position);
+//            }
+//        }
+//    }
 
     @Override
     protected void onDestroy() {
@@ -288,5 +300,21 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     public void openInternetSettings(View view) {
         startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+    }
+
+    private void loadCachedData(int currentSelection) {
+        switch (currentSelection) {
+            case AppConstants.SELECTION_POPULAR_MOVIES:
+                presenter.fetchCachedPopularMovies(this);
+                break;
+            case AppConstants.SELECTION_TOP_RATED_MOVIES:
+                presenter.fetchCachedTopRatedMovies(this);
+                break;
+            case AppConstants.SELECTION_FAVORITE_MOVIES:
+                presenter.fetchAllFavoriteMovies(this);
+                break;
+            default:
+                break;
+        }
     }
 }
