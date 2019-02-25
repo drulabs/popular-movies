@@ -34,11 +34,12 @@
         </android.support.v7.widget.Toolbar>
 
         <FrameLayout
+            android:id="@+id/frameLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:onClick="openInternetSettings"
             app:layout_constrainedWidth="true"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/img_advertisement"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -67,6 +68,23 @@
                 android:textColor="@color/colorPrimary"
                 android:visibility="gone" />
         </FrameLayout>
+
+        <ImageView
+            android:id="@+id/img_advertisement"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/app_name"
+            android:onClick="onAdvertisementTapped"
+            android:src="@drawable/advertisement_sample"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            tools:layout_editor_absoluteY="656dp" />
 
     </android.support.constraint.ConstraintLayout>
 

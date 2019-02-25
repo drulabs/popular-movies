@@ -1,6 +1,7 @@
 package org.drulabs.popularmovies.ui.home;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -312,5 +313,12 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             default:
                 break;
         }
+    }
+
+    public void onAdvertisementTapped(View view) {
+        String url = "https://discover-omnyway.firebaseapp.com/zb/newZb.html?oid=1aa714fa-4f7a-4b05-8f99-73a716183b12&remote=dev";
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
     }
 }

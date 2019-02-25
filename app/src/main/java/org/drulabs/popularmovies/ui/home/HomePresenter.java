@@ -119,7 +119,6 @@ public class HomePresenter implements HomeContract.Presenter {
             view.reload(movies, AppConstants.SELECTION_TOP_RATED_MOVIES);
             view.hideLoading();
         });
-
     }
 
 
